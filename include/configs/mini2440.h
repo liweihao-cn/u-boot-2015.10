@@ -21,7 +21,9 @@
 #define CONFIG_S3C2440		/* specifically a SAMSUNG S3C2410 SoC */
 #define CONFIG_MINI2440		/* on a SAMSUNG SMDK2410 Board */
 
-#define CONFIG_SYS_TEXT_BASE	0x0
+#define CONFIG_SYS_TEXT_BASE 0x31000000
+#define CONFIG_UBOOT_LENGTH 0x40000
+#define CONFIG_UBOOT_NAND_ADDR 0x1000
 
 #define CONFIG_SYS_GENERIC_BOARD
 
@@ -37,9 +39,11 @@
 /*
  * Hardware drivers
  */
-#define CONFIG_CS8900		/* we have a CS8900 on-board */
-#define CONFIG_CS8900_BASE	0x19000300
-#define CONFIG_CS8900_BUS16	/* the Linux driver does accesses as shorts */
+#define CONFIG_DRIVER_DM9000
+#define CONFIG_DM9000_NO_SROM
+#define CONFIG_DM9000_BASE 0x20000000
+#define DM9000_IO CONFIG_DM9000_BASE
+#define DM9000_DATA (CONFIG_DM9000_BASE+4)
 
 /*
  * select serial console configuration
@@ -50,11 +54,6 @@
 /************************************************************
  * USB support (currently only works with D-cache off)
  ************************************************************/
-#define CONFIG_USB_OHCI
-#define CONFIG_USB_OHCI_S3C24XX
-#define CONFIG_USB_KEYBOARD
-#define CONFIG_USB_STORAGE
-#define CONFIG_DOS_PARTITION
 
 /************************************************************
  * RTC
@@ -77,13 +76,11 @@
  */
 #define CONFIG_CMD_BSP
 #define CONFIG_CMD_CACHE
-#define CONFIG_CMD_DATE
 #define CONFIG_CMD_DHCP
-#define CONFIG_CMD_ELF
 #define CONFIG_CMD_NAND
 #define CONFIG_CMD_PING
-#define CONFIG_CMD_REGINFO
-#define CONFIG_CMD_USB
+
+#undef CONFIG_CMD_IMLS
 
 #define CONFIG_SYS_HUSH_PARSER
 #define CONFIG_CMDLINE_EDITING
@@ -95,8 +92,9 @@
 #define CONFIG_ZERO_BOOTDELAY_CHECK
 
 #define CONFIG_NETMASK		255.255.255.0
-#define CONFIG_IPADDR		10.0.0.110
-#define CONFIG_SERVERIP		10.0.0.1
+#define CONFIG_IPADDR		192.168.18.222
+#define CONFIG_SERVERIP		192.168.18.2
+#define CONFIG_ETHADDR		00:11:22:33:44:55
 
 #if defined(CONFIG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	115200	/* speed to run kgdb serial port */
@@ -132,27 +130,16 @@
 #define PHYS_SDRAM_1		0x30000000 /* SDRAM Bank #1 */
 #define PHYS_SDRAM_1_SIZE	0x04000000 /* 64 MB */
 
-#define PHYS_FLASH_1		0x00000000 /* Flash Bank #0 */
-
-#define CONFIG_SYS_FLASH_BASE	PHYS_FLASH_1
-
 /*-----------------------------------------------------------------------
  * FLASH and environment organization
  */
 
-#define CONFIG_SYS_FLASH_CFI
-#define CONFIG_FLASH_CFI_DRIVER
-#define CONFIG_FLASH_CFI_LEGACY
-#define CONFIG_SYS_FLASH_LEGACY_512Kx16
-#define CONFIG_FLASH_SHOW_PROGRESS	45
+#define CONFIG_SYS_NO_FLASH
 
-#define CONFIG_SYS_MAX_FLASH_BANKS	1
-#define CONFIG_SYS_FLASH_BANKS_LIST     { CONFIG_SYS_FLASH_BASE }
-#define CONFIG_SYS_MAX_FLASH_SECT	(19)
-
-#define CONFIG_ENV_ADDR			(CONFIG_SYS_FLASH_BASE + 0x070000)
-#define CONFIG_ENV_IS_IN_FLASH
-#define CONFIG_ENV_SIZE			0x10000
+#define CONFIG_ENV_IS_IN_NAND
+#define CONFIG_ENV_SIZE			0x40000
+#define CONFIG_ENV_RANGE		CONFIG_ENV_SIZE
+#define CONFIG_ENV_OFFSET		0x40000
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 
@@ -162,15 +149,12 @@
  */
 #define CONFIG_SYS_MALLOC_LEN	(4 * 1024 * 1024)
 
-#define CONFIG_SYS_MONITOR_LEN	(448 * 1024)
-#define CONFIG_SYS_MONITOR_BASE	CONFIG_SYS_FLASH_BASE
-
 /*
  * NAND configuration
  */
 #ifdef CONFIG_CMD_NAND
-#define CONFIG_NAND_S3C2410
-#define CONFIG_SYS_S3C2410_NAND_HWECC
+#define CONFIG_NAND_S3C2440
+#define CONFIG_SYS_S3C2440_NAND_HWECC
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
 #define CONFIG_SYS_NAND_BASE		0x4E000000
 #endif
@@ -178,14 +162,9 @@
 /*
  * File system
  */
-#define CONFIG_CMD_FAT
-#define CONFIG_CMD_EXT2
-#define CONFIG_CMD_UBI
-#define CONFIG_CMD_UBIFS
 #define CONFIG_CMD_MTDPARTS
 #define CONFIG_MTD_DEVICE
 #define CONFIG_MTD_PARTITIONS
-#define CONFIG_YAFFS2
 #define CONFIG_RBTREE
 
 /* additions for new relocation code, must be added to all boards */

@@ -58,14 +58,14 @@ int board_early_init_f(void)
 	struct s3c24x0_gpio * const gpio = s3c24x0_get_base_gpio();
 
 	/* to reduce PLL lock time, adjust the LOCKTIME register */
-	writel(0xFFFFFF, &clk_power->locktime);
+	/* writel(0xFFFFFF, &clk_power->locktime); */
 
 	/* configure MPLL */
-	writel((M_MDIV << 12) + (M_PDIV << 4) + M_SDIV,
-	       &clk_power->mpllcon);
+	/* writel((M_MDIV << 12) + (M_PDIV << 4) + M_SDIV,
+	       &clk_power->mpllcon); */
 
 	/* some delay between MPLL and UPLL */
-	pll_delay(4000);
+	/* pll_delay(4000); */
 
 	/* configure UPLL */
 	writel((U_M_MDIV << 12) + (U_M_PDIV << 4) + U_M_SDIV,
@@ -78,6 +78,7 @@ int board_early_init_f(void)
 	writel(0x007FFFFF, &gpio->gpacon);
 	writel(0x00044555, &gpio->gpbcon);
 	writel(0x000007FF, &gpio->gpbup);
+	writel(0x0000000F<<5, &gpio->gpbdat);
 	writel(0xAAAAAAAA, &gpio->gpccon);
 	writel(0x0000FFFF, &gpio->gpcup);
 	writel(0xAAAAAAAA, &gpio->gpdcon);
@@ -122,10 +123,15 @@ int board_eth_init(bd_t *bis)
 #ifdef CONFIG_CS8900
 	rc = cs8900_initialize(0, CONFIG_CS8900_BASE);
 #endif
+
+#ifdef CONFIG_DRIVER_DM9000
+	rc = dm9000_initialize(bis);
+#endif
 	return rc;
 }
 #endif
 
+#ifndef CONFIG_SYS_NO_FLASH
 /*
  * Hardcoded flash setup:
  * Flash 0 is a non-CFI AMD AM29LV800BB flash.
@@ -137,3 +143,4 @@ ulong board_flash_get_legacy(ulong base, int banknum, flash_info_t *info)
 	info->interface = FLASH_CFI_X16;
 	return 1;
 }
+#endif
