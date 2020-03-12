@@ -22,7 +22,7 @@
 #define CONFIG_MINI2440		/* on a SAMSUNG SMDK2410 Board */
 
 #define CONFIG_SYS_TEXT_BASE 0x31000000
-#define CONFIG_UBOOT_LENGTH 0x40000
+#define CONFIG_UBOOT_LENGTH 0x80000
 #define CONFIG_UBOOT_NAND_ADDR 0x1000
 
 #define CONFIG_SPL_TARGET "u-boot-with-spl.bin"
@@ -121,6 +121,8 @@
 
 #define CONFIG_SYS_LOAD_ADDR		0x30800000
 
+#define CONFIG_OF_LIBFDT
+
 /* support additional compression methods */
 #define CONFIG_BZIP2
 #define CONFIG_LZO
@@ -140,9 +142,9 @@
 #define CONFIG_SYS_NO_FLASH
 
 #define CONFIG_ENV_IS_IN_NAND
-#define CONFIG_ENV_SIZE			0x40000
+#define CONFIG_ENV_SIZE			0x80000
 #define CONFIG_ENV_RANGE		CONFIG_ENV_SIZE
-#define CONFIG_ENV_OFFSET		0x40000
+#define CONFIG_ENV_OFFSET		0x80000
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 
