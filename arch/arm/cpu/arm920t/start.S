@@ -82,24 +82,6 @@ copyex:
 	str	r1, [r0]
 # endif
 
-/* init MPLL  */
-#define CLK_DIVN 0x4c000014
-#define DIV_VAL ((2<<1) | (1<<0))
-#define MPLL_CON 0x4c000004
-#define S3C2440_MPLL_400MHZ ((0x5c<<12)|(0x01<<4)|(0x01))
-
-	ldr	r0, =CLK_DIVN
-	ldr	r1, =DIV_VAL
-	str	r1, [r0]
-
-	mrc	p15, 0, r0, c1, c0, 0
-	orr	r0, r0, #0xc0000000
-	mcr	p15, 0, r0, c1, c0, 0
-
-	ldr	r0, =MPLL_CON
-	ldr	r1, =S3C2440_MPLL_400MHZ
-	str	r1, [r0]
-
 #endif	/* CONFIG_S3C24X0 */
 
 	/*
@@ -111,7 +93,10 @@ copyex:
 #endif
 
 #endif /* CONFIG_SPL_BUILD */
+
+#if !defined(CONFIG_SPL_BUILD)
 	bl	_main
+#endif
 
 /*------------------------------------------------------------------------------*/
 

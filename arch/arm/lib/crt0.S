@@ -107,18 +107,7 @@ clr_gd:
 	str	sp, [r9, #GD_MALLOC_BASE]
 #endif
 	/* mov r0, #0 not needed due to above code */
-
-#if defined(CONFIG_SPL_BUILD)
-	ldr	r0, =CONFIG_UBOOT_NAND_ADDR
-	ldr	r1, =CONFIG_SYS_TEXT_BASE
-	ldr	r2, =CONFIG_UBOOT_LENGTH
-
-	bl	copy_code_to_sdram
-
-	ldr	pc, =CONFIG_SYS_TEXT_BASE
-#else
 	bl	board_init_f
-#endif
 
 #if ! defined(CONFIG_SPL_BUILD)
 

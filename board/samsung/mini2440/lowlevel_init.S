@@ -106,10 +106,28 @@
 #define Trc			0x3	/* 7clk */
 #define Tchr			0x2	/* 3clk */
 #define REFCNT			1113	/* period=15.6us, HCLK=60Mhz, (2048+1-15.6*60) */
+
+#define CLK_DIVN 0x4c000014
+#define DIV_VAL ((2<<1) | (1<<0))
+#define MPLL_CON 0x4c000004
+#define S3C2440_MPLL_400MHZ ((0x5c<<12)|(0x01<<4)|(0x01))
 /**************************************/
 
 .globl lowlevel_init
 lowlevel_init:
+	/* init MPLL  */
+	ldr	r0, =CLK_DIVN
+	ldr	r1, =DIV_VAL
+	str	r1, [r0]
+
+	mrc	p15, 0, r0, c1, c0, 0
+	orr	r0, r0, #0xc0000000
+	mcr	p15, 0, r0, c1, c0, 0
+
+	ldr	r0, =MPLL_CON
+	ldr	r1, =S3C2440_MPLL_400MHZ
+	str	r1, [r0]
+
 	/* memory control configuration */
 	/* make r0 relative the current location so that it */
 	/* reads SMRDATA out of FLASH rather than memory ! */
@@ -123,6 +141,21 @@ lowlevel_init:
 	str     r3, [r1], #4
 	cmp     r2, r0
 	bne     0b
+
+#if defined(CONFIG_SPL_BUILD)
+	/* Set temporary stack */
+	ldr	sp, =0x1000
+
+	/* read u-boot from nand flash */
+	ldr	r0, =CONFIG_UBOOT_NAND_ADDR
+	ldr	r1, =CONFIG_SYS_TEXT_BASE
+	ldr	r2, =CONFIG_UBOOT_LENGTH
+
+	bl	copy_code_to_sdram
+
+	/* do not go back, just jump to CONFIG_SYS_TEXT_BASE */
+	ldr	pc, =CONFIG_SYS_TEXT_BASE
+#endif /* CONFIG_SPL_BUILD */
 
 	/* everything is fine now */
 	mov	pc, lr
